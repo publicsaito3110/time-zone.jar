@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalTime;
 
 /**
- * @author Saito-san
+ * @author saito
  *
  */
 public class TimeZone {
@@ -43,16 +43,16 @@ public class TimeZone {
 		super();
 
 		//Validation
-		if (this.isValiHour(hour)) {
+		if (this.isNotValiHour(hour)) {
 			this.executeException("parameter is out of range");
 		}
-		if (this.isValiMinutes(minute)) {
+		if (this.isNotValiMinutes(minute)) {
 			this.executeException("parameter is out of range");
 		}
-		if (this.isValiSecond(second)) {
+		if (this.isNotValiSecond(second)) {
 			this.executeException("parameter is out of range");
 		}
-		if (this.isValiMiliSecond(miliSecond)) {
+		if (this.isNotValiMiliSecond(miliSecond)) {
 			this.executeException("parameter is out of range");
 		}
 
@@ -266,7 +266,7 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate difference timeZone substract hour<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
 	 * @param hour
@@ -278,7 +278,11 @@ public class TimeZone {
 			this.executeException("param is out of range");
 		}
 		if (this.getHour() < hour) {
-			this.executeException("param is large, calculate is minus value");
+			this.hour = "00";
+			this.minute = "00";
+			this.second = "00";
+			this.miliSecond = "000000";
+			return;
 		}
 
 		//Reset fields
@@ -291,7 +295,7 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate difference timeZone substract minute<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
 	 * @param minute
@@ -300,12 +304,18 @@ public class TimeZone {
 
 		//Validation
 		if (minute < 0) {
-			this.executeException("param is out of range");
+			this.executeException("param is invalid");
 		}
 		double thisSecond = this.convertSecond();
 		double argsMinuteSecond = minute * 60;
+
+		//When param is more than this time by second
 		if (thisSecond < argsMinuteSecond) {
-			this.executeException("param is large, calculate is minus value");
+			this.hour = "00";
+			this.minute = "00";
+			this.second = "00";
+			this.miliSecond = "000000";
+			return;
 		}
 
 		//Calc by BigDecimal
@@ -329,7 +339,7 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate difference timeZone substract second<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
 	 * @param second
@@ -338,11 +348,17 @@ public class TimeZone {
 
 		//Validation
 		if (second < 0) {
-			this.executeException("param is out of range");
+			this.executeException("param is invalid");
 		}
 		double thisSecond = this.convertSecond();
+
+		//When param is more than this time by second
 		if (thisSecond < second) {
-			this.executeException("param is large, calculate is minus value");
+			this.hour = "00";
+			this.minute = "00";
+			this.second = "00";
+			this.miliSecond = "000000";
+			return;
 		}
 
 		//Calc by BigDecimal
@@ -366,17 +382,17 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate increment timeZone add argTimeZone<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
-	 * @param argTimeZone
+	 * @param argsTimeZone
 	 * @return After calculate time (hh:mm:ss.ffffff)
 	 */
-	public String add(TimeZone argTimeZone) {
+	public String add(TimeZone argsTimeZone) {
 
 		//thisTimeZone and argTimeZone convert second
 		double thisSecondDb = this.convertSecond();
-		double argTimeZoneSecondDb = argTimeZone.convertSecond();
+		double argTimeZoneSecondDb = argsTimeZone.convertSecond();
 
 		//Calc by BigDecimal
 		BigDecimal thisSecondBd = new BigDecimal(String.valueOf(thisSecondDb));
@@ -401,7 +417,7 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate increment timeZone add hour<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
 	 * @param hour
@@ -410,7 +426,7 @@ public class TimeZone {
 
 		//Validation
 		if (hour < 0) {
-			this.executeException("param is out of range");
+			this.executeException("param is invalid");
 		}
 
 		//When hour is more than 24
@@ -434,7 +450,7 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate increment timeZone add minute<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
 	 * @param minute
@@ -443,7 +459,7 @@ public class TimeZone {
 
 		//Validation
 		if (minute < 0) {
-			this.executeException("param is out of range");
+			this.executeException("param is invalid");
 		}
 
 		//Calc Setting hour and minute by minute
@@ -467,7 +483,7 @@ public class TimeZone {
 	 *
 	 * <p>
 	 * Calculate increment timeZone add second<br>
-	 * When across day, calculate time. But, Acrossing day can't calculate.
+	 * When across day, calculate time. But, Acrossing day can't be calculated.
 	 * </p>
 	 *
 	 * @param second
@@ -476,7 +492,7 @@ public class TimeZone {
 
 		//Validation
 		if (second < 0) {
-			this.executeException("param is out of range");
+			this.executeException("param is invalid");
 		}
 
 		//Change BigDecimal and adjust format s.ffffff
@@ -520,9 +536,9 @@ public class TimeZone {
 	 *
 	 * @param hour
 	 * @return true: Not applicable to Validation<br>
-	 *  false: applicable to Validation
+	 *  false: Applicable to Validation
 	 */
-	private boolean isValiHour(int hour) {
+	private boolean isNotValiHour(int hour) {
 
 		if(!(0 <= hour && hour < HOUR_24)) {
 			return true;
@@ -542,9 +558,9 @@ public class TimeZone {
 	 *
 	 * @param minute
 	 * @return true: Not applicable to Validation<br>
-	 *  false: applicable to Validation
+	 *  false: Applicable to Validation
 	 */
-	private boolean isValiMinutes(int minute) {
+	private boolean isNotValiMinutes(int minute) {
 
 		if(!(0 <= minute && minute < 60)) {
 			return true;
@@ -564,9 +580,9 @@ public class TimeZone {
 	 *
 	 * @param second
 	 * @return true: Not applicable to Validation<br>
-	 *  false: applicable to Validation
+	 *  false: Applicable to Validation
 	 */
-	private boolean isValiSecond(int second) {
+	private boolean isNotValiSecond(int second) {
 
 		if(!(0 <= second && second < 60)) {
 			return true;
@@ -586,9 +602,9 @@ public class TimeZone {
 	 *
 	 * @param miliSecond
 	 * @return true: Not applicable to Validation<br>
-	 *  false: applicable to Validation
+	 *  false: Applicable to Validation
 	 */
-	private boolean isValiMiliSecond(int miliSecond) {
+	private boolean isNotValiMiliSecond(int miliSecond) {
 
 		if(!(0 <= miliSecond && miliSecond < 1000000)) {
 			return true;
@@ -673,8 +689,8 @@ public class TimeZone {
 			throw new UnsupportedException(massage);
 		} catch(UnsupportedException e) {
 			e.printStackTrace();
-			System.exit(1);
 		}
+		System.exit(1);
 	}
 }
 
